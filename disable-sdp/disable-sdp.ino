@@ -1,12 +1,4 @@
 // A modified version of https://github.com/TomNisbet/TommyPROM/blob/master/unlock-ben-eater-hardware/unlock-ben-eater-hardware.ino 
-//
-// Utility to unlock 28C256 Software Data Protection (SDP) for the Ben Eater EEPROM
-// programmer design.  This hardware is similar to the TommyPROM hardware, but it uses
-// different shift register chips and different pin assignments.
-//
-// To meet the timing requirements of the SDP unlock, this code uses direct port writes
-// to set and read values on the data bus.  It will work Arduino Uno and Nano hardware,
-// but would require changes for other platforms.
 
 
 #define WRITE_EN 2
@@ -56,17 +48,15 @@ void setup() {
     // Program a test pattern and fill the remainder of the first block with 0xff
     Serial.print("Writing test pattern to EEPROM... ");
 
-    for (int i = 0; i < 10; i++) {
-        writeEEPROM(i, test_data[i]);
-        // writeEEPROM(i, 0xae);
+    for (int i = 0; i < 32; i++) {
+        writeEEPROM(i, 0xea);
     }
     Serial.println("Done writing");
     // Read and print out the contents of the EERPROM
     Serial.println("Reading EEPROM...");
     printContents();
  
-    Serial.println();
-    Serial.println("Done reading");
+    Serial.println("\nDone reading");
 }
 
 
@@ -75,15 +65,16 @@ void loop() {
 
 
 void setAddress(int addr, bool outputEnable) {
-    if (outputEnable) {
-        digitalWrite(OUTPUT_EN, LOW);
-    } else {
-        digitalWrite(OUTPUT_EN, HIGH);
-    }
+    digitalWrite(WRITE_EN, HIGH);
     for (int i = 0; i < 15; i++)
     {
         digitalWrite(address_bus_pins[i], addr & 1);
         addr >>= 1;
+    }
+    if (outputEnable) {
+      digitalWrite(OUTPUT_EN, LOW);
+    } else {
+      digitalWrite(OUTPUT_EN, HIGH);
     }
 }
 
@@ -100,7 +91,7 @@ void writeEEPROM(int address, byte data) {
     setDataBusMode(OUTPUT);
     writeDataBus(data);
     enableWrite();
-    delayMicroseconds(1);
+    delayMicroseconds(100);
     disableWrite();
     delay(10);
 }
@@ -138,7 +129,7 @@ void disableSoftwareWriteProtect() {
 }
 
 // Write the special three-byte code to turn on Software Data Protection.
-void enableSoftwareWriteProtect() {
+void enableSoftwareWriteProtect() { // Isn't used anywhere
     disableWrite();
     setDataBusMode(OUTPUT);
 
@@ -162,14 +153,14 @@ void setDataBusMode(uint8_t mode) {
             pinMode(data_bus_pins[i], INPUT);
         }
     }
-}        
+}
 
 
 // Read a byte from the data bus.  The caller must set the bus to input_mode
 // before calling this or no useful data will be returned.
 byte readDataBus() {
     digitalWrite(OUTPUT_EN, LOW);
-    delayMicroseconds(1);
+    delayMicroseconds(100);
     byte data = 0;
     for (int i = 7; i >= 0; i--) {
         data = (data << 1) + digitalRead(data_bus_pins[i]);
