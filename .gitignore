@@ -1,0 +1,5 @@
+build/
+venv/
+rom.bin
+read_rom.bin
+eeprom_flasher/build/
