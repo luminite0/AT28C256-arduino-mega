@@ -1,6 +1,3 @@
-// address to write data byte to
-int address = 0x00;
-
 int address_bus_pins[] = { 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52 };
 int data_bus_pins[] = { 31, 33, 35, 37, 39, 41, 43, 45 };
 int WRITE_ENABLE = 2;
@@ -27,9 +24,9 @@ void setup() {
 }
 
 void set_addr(int addr) {
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 15; i++) {
         // write the result from anding first bit of addr and 1
-        digitalWrite(address_bus_pins[i], (addr & 1) ? 1 : 0);
+        digitalWrite(address_bus_pins[i], addr & 1);
         // right shift so the originally second bit is now the first bit
         addr >>= 1;
     }
@@ -67,10 +64,18 @@ byte read_data(int addr) {
     return data;
 }
 
+void disable_sdp() {
+    write_data(0xaa, 0x5555);
+    write_data(0x55, 0x2aaa);
+    write_data(0x80, 0x5555);
+    write_data(0xaa, 0x5555);
+    write_data(0x55, 0x2aaa);
+    write_data(0x20, 0x5555);
+}
 
 void flash_chip() {
     // reset address
-    address = 0x00;
+    int address = 0x00;
     while (true) {
         while (!Serial.available()); // wait until there's data to read
         byte buff = Serial.read();
@@ -80,7 +85,7 @@ void flash_chip() {
 }
 
 void dump_chip() {
-    address = 0x00;
+    int address = 0x00;
     read_data_buff = 0;
     while (true) {
         byte data = read_data(address);
