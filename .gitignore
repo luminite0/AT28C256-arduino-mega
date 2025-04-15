@@ -1,5 +1,5 @@
 build/
 venv/
 rom.bin
-read_rom.bin
+read.bin
 eeprom_flasher/build/

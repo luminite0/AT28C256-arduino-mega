@@ -23,10 +23,17 @@ def main():
         current_byte = 0
         progress_percent = 0
 
-        with serial.Serial(str(port), 115200, timeout=None) as ser:
+        # Temporary until page write is implemented
+        ser0 = serial.Serial(str(port), 115200, timeout=None)
+        time.sleep(1)
+        ser0.write(b"w")
+        ser0.close()
+
+
+        with serial.Serial(str(port), 800, timeout=None) as ser:
             with open(filename, "rb") as rom_file:
                 time.sleep(1)
-                ser.write(b"w")
+                # ser.write(b"w")
                 time.sleep(0.01)
                 for i in range(file_size):
                     byte_from_file = rom_file.read(1)
