@@ -55,7 +55,9 @@ void write_data(byte data, int addr) {
     }
     // pulse write enable
     pulse_write_en();
-    // give eeprom time to write data
+    // Give eeprom time to write data.
+    // Optionally change this to delay(3) if using the AT28C256F for
+    // slightly faster write times.
     delay(10);
 }
 
