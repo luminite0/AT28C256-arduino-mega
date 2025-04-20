@@ -24,7 +24,7 @@ def main():
         current_byte = 0
         progress_percent = 0
 
-        with serial.Serial(str(port), 51200, timeout=None) as ser:
+        with serial.Serial(str(port), 25600, timeout=None) as ser:
             with open(filename, "rb") as rom_file:
                 time.sleep(1)
                 # Tell arduino it is being written to
@@ -48,7 +48,7 @@ def main():
         progress_percent = 0
 
         with open(filename, "wb") as rom_file:
-            with serial.Serial(str(port), 51200, timeout=1) as ser:
+            with serial.Serial(str(port), 25600, timeout=1) as ser:
                 time.sleep(1)
                 ser.write(b"r")
                 for i in range(file_size):

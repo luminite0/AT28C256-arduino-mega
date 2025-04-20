@@ -104,7 +104,7 @@ void write_page(int start_addr) {
     // Write the 64 bytes
     for (int i = 0; i < 64; i++) {
         set_byte_within_page(i);
-        set_data_bus(page_from_serial[i]); //0xea); //page_from_serial[i]);
+        set_data_bus(page_from_serial[i]); 
         pulse_write_en();
     }
     // Time out byte load cycle time
@@ -112,12 +112,6 @@ void write_page(int start_addr) {
     // Wait for the data to actually be written
     delay(10);
 
-}
-
-void test_write_page() {
-    for (int i = 0; i < 64; i++) {
-    }
-    write_page(0x55);
 }
 
 void disable_sdp() {
@@ -129,19 +123,15 @@ void disable_sdp() {
     write_data(0x20, 0x5555);
 }
 
-// int file_size is in bytes
 void flash_chip() {
 
     // Binary file is always 32768 bytes in size.
     // A page is 64 bytes, so there are 512 write operations.
     // Page address goes from 0 to 511.
-    unsigned int current_page_address = 0;
-    
-    while (current_page_address < 512) {
-        while (!Serial.available());
-        // Write the page of 64 bytes starting at the address
-        write_page(current_page_address);
-        current_page_address++;
+
+    for (int i = 0; i < 512; i++) {
+        // Write the page of 64 bytes starting at the address i
+        write_page(i);
     }
 }
 
@@ -151,12 +141,12 @@ void dump_chip() {
     while (address < 32768) {
         byte data = read_data(address);
         address++;
-        Serial.print(data, HEX);
+        Serial.write(data);
     }
 }
 
 
-void time_write() {
+void time_single_write() {
     int before_time = millis();
     write_data(0x48, 0);
     int after_time = millis();
@@ -166,6 +156,15 @@ void time_write() {
     Serial.println();
 }
 
+void time_page_write() {
+    int before_time = millis();
+    write_page(5);
+    int after_time = millis();
+    int difference = after_time - before_time;
+    Serial.print("Time in between is: ");
+    Serial.print(difference);
+    Serial.println();
+}
 void write_single_value(byte val) {
     int address = 0x00;
     while (address < 32768) {
@@ -189,14 +188,13 @@ void setup() {
     digitalWrite(OUTPUT_ENABLE, HIGH);
     pinMode(OUTPUT_ENABLE, OUTPUT);
 
-    Serial.begin(51200);
+    Serial.begin(25600);
 }
 
 void loop() {
     while (!Serial.available());
     byte command = Serial.read();
 
-    // test_write_page();
     if (command == 'w') {
         flash_chip();
     } else if (command == 'r') {
