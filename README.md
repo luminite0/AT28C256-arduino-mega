@@ -1,5 +1,5 @@
 # AT28C256 EEPROM flasher
-Made with the Arduino Mega. This program utilizes the AT28C256's page write capabilities to write data. Because of this, it only takes around 8 seconds to write the entire 32k chip.
+Made with the Arduino Mega. This program utilizes the AT28C256's page write capabilities to write data.
 Other Arduinos can be used, as this program uses chip-agnostic functions like
 digitalRead(), digitalWrite() etc.
 To use, clone the repo and upload the .ino file to the arduino mega.
