@@ -36,6 +36,7 @@ def main():
                     progress_percent = (current_byte / file_size) * 100
                     print(f"Progress: {progress_percent:.2f}%", end="\r")
             rom_file.close()
+        print("Done flashing.")
         ser.close()
         sys.exit(0)
 
@@ -58,6 +59,7 @@ def main():
                     progress_percent = (current_byte / file_size) * 100
                     print(f"Progress: {progress_percent:.2f}%", end="\r")
             rom_file.close()
+        print("Done dumping.")
         ser.close()
         sys.exit(0)
 
